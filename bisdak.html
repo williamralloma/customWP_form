@@ -1,0 +1,128 @@
+<!-- BEGIN: Cost Calculator Form -->
+<div class="calculator-container">
+<div class="card p-4 shadow-sm">
+  <form id="calculatorForm">
+    <!-- Cost Options -->
+        <h2>Choose your design</h2>
+       <div class="d-flex flex-wrap gap-3 justify-content-between mb-3">
+  <div class="flex-fill min-width-0">
+    <label for="radoRail" class="form-label fw-bold">Select Dado Rail</label>
+    <select name="radoRail" id="radoRail" class="form-select" required>
+      <option value="10">19x63 Victorian</option>
+      <option value="15">15x57 Victorian</option>
+      <option value="20">25x50 Astragal</option>
+    </select>
+    <img id="radoImage" class="img-fluid mt-2" style="display: none; max-height:150px;" alt="Dado Rail Preview">
+  </div>
+
+  <div class="flex-fill min-width-0">
+    <label for="panelMode" class="form-label fw-bold">Select Panel Mode</label>
+    <select name="panelMode" id="panelMode" class="form-select" required>
+      <option value="30">12x25 Ogee</option>
+      <option value="45">12x32 Ogee</option>
+      <option value="60">16x38 Ogee</option>
+      <option value="70">12x25 Astragal</option>
+    </select>
+    <img id="panelImage" class="img-fluid mt-2" style="display: none; max-height:150px;" alt="Panel Mode Preview">
+  </div>
+</div>
+
+    <div class="mb-3">
+      <label for="inputSQM" class="form-label fw-bold">Estimated Square Meter</label>
+      <input type="number" id="inputSQM" class="form-control" placeholder="0" min="0" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="inputPrice" class="form-label fw-bold">Estimated Cost</label>
+      <div class="input-group">
+        <span class="input-group-text">£</span>
+        <input type="text" id="inputPrice" class="form-control" readonly>
+      </div>
+    </div>
+    <div class="form-text1">
+            <p class="text-form">Confirm quote with onsite visit</p>
+    </div>
+    <div class="d-grid">
+      <button type="button" class="btn btn-warning fw-bold py-2" data-bs-toggle="modal" data-bs-target="#detailsModal">
+        Submit your details now!
+      </button>
+    </div>
+      <div class="form-txt bottom-txt"><p>Your details are secure. No intrusive sales calls – just a direct confirmation. Your home transformation begins here.
+    </p></div>
+
+  </form>
+</div>
+
+<!-- MODAL: Customer Info & Final Submission -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content shadow">
+      <form id="fullForm" method="POST" action="/wp-admin/admin-post.php">
+        <input type="hidden" name="action" value="send_sample_request" />
+
+        <!-- These will be dynamically set just before submission -->
+        <input type="hidden" name="rado_rail" id="hiddenRadoRail" />
+        <input type="hidden" name="panel_mode" id="hiddenPanelMode" />
+        <input type="hidden" name="sqm" id="hiddenSQM" />
+        <input type="hidden" name="price" id="hiddenPrice" />
+
+        <div class="modal-header">
+          <h5 class="modal-title">Enter Your Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal">X</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
+            <input type="text" id="name" name="name" class="form-control" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="tel" id="phone" name="phone" class="form-control" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="address" class="form-label">Shipping Address</label>
+            <textarea id="address" name="address" class="form-control" required></textarea>
+          </div>
+        </div>
+
+
+        <div class="border-top pt-3 mt-3">
+  <h6 class="fw-bold">Summary</h6>
+  <table class="table table-sm table-bordered">
+    <tbody>
+      <tr>
+        <td class="fw-bold">Rado Rail</td>
+        <td id="summaryRadoRail">—</td>
+      </tr>
+      <tr>
+        <td class="fw-bold">Panel Mode</td>
+        <td id="summaryPanelMode">—</td>
+      </tr>
+      <tr>
+        <td class="fw-bold">Square Meters</td>
+        <td id="summarySQM">—</td>
+      </tr>
+      <tr>
+        <td class="fw-bold">Total Price</td>
+        <td id="summaryPrice">—</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Submit Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
