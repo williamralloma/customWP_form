@@ -1,4 +1,6 @@
-unction enqueue_calculator_script() {
+
+
+function enqueue_calculator_script() {
     // Make sure jQuery and Bootstrap are loaded
     wp_enqueue_script('jquery');
     wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css');
@@ -36,14 +38,16 @@ function handle_sample_request() {
     $message .= "Address: $address\n\n";
     $message .= "Rado Rail: $rado\n";
     $message .= "Panel Mode: $panel\n";
-    $message .= "SQM: $sqm\n";
-    $message .= "Price: €$price\n";
+    $message .= "Meters: $sqm\n";
+    $message .= "Price: £$price\n";
+	
+	$headers = [];
+	$headers[] = 'From: Your Site <noreply@yoursite.com>';
+	$headers[] = 'Cc: Shannon <shannon_det@hotmail.com>';
 
-	$headers[] = 'Cc: William Ralloa <william.ralloma@gmail.com>';
-
-    wp_mail($to, $subject, $message);
+	wp_mail($to, $subject, $message, $headers);
 
     // Redirect after success
-    wp_redirect(home_url('/wedding')); // You can change this
+    wp_redirect(home_url('/?sample_request=success#estimate_form')); // You can change this
     exit;
 }
