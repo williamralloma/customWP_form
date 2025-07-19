@@ -5,6 +5,8 @@ window.addEventListener('DOMContentLoaded', function () {
   const inputPrice = document.getElementById('inputPrice');
   const radoImage = document.getElementById('radoImage');
   const panelImage = document.getElementById('panelImage');
+  const fullForm = document.getElementById('fullForm');
+  const formWrapper = document.getElementById('custom-form');
 
   const radoImageMap = {
     '10': 'https://mrstairpanelling.co.uk/wp-content/uploads/2025/07/19x63-Victorian.png',
@@ -20,34 +22,28 @@ window.addEventListener('DOMContentLoaded', function () {
   };
 
   function calculatePrice() {
-    //const rado = parseFloat(radoRail.value) || 0;
-    //const panel = parseFloat(panelMode.value) || 0;
     const sqm = parseFloat(inputSQM.value) || 0;
     return (99 * sqm);
   }
 
   function updateAllFields() {
-    console.log("updateAllFields called");
-
     const price = calculatePrice().toFixed(2);
     inputPrice.value = price;
 
-	hiddenRadoRail.value = radoRail.options[radoRail.selectedIndex].text;
+    hiddenRadoRail.value = radoRail.options[radoRail.selectedIndex].text;
     hiddenPanelMode.value = panelMode.options[panelMode.selectedIndex].text;
     hiddenSQM.value = inputSQM.value;
     hiddenPrice.value = price;
 
-	 // Update preview summary (modal table)
-	document.getElementById('summaryRadoRail').textContent = radoRail.options[radoRail.selectedIndex].text;
-	document.getElementById('summaryPanelMode').textContent = panelMode.options[panelMode.selectedIndex].text;
-	document.getElementById('summarySQM').textContent = inputSQM.value;
-	document.getElementById('summaryPrice').textContent = "£" + price;
+    document.getElementById('summaryRadoRail').textContent = radoRail.options[radoRail.selectedIndex].text;
+    document.getElementById('summaryPanelMode').textContent = panelMode.options[panelMode.selectedIndex].text;
+    document.getElementById('summarySQM').textContent = inputSQM.value;
+    document.getElementById('summaryPrice').textContent = "£" + price;
 
     const radoVal = radoRail.value;
     const panelVal = panelMode.value;
 
     if (radoImageMap[radoVal]) {
-      console.log("Updating Rado Image to:", radoImageMap[radoVal]);
       radoImage.src = radoImageMap[radoVal];
       radoImage.style.display = 'block';
     } else {
@@ -55,21 +51,70 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     if (panelImageMap[panelVal]) {
-      console.log("Updating Panel Image to:", panelImageMap[panelVal]);
       panelImage.src = panelImageMap[panelVal];
       panelImage.style.display = 'block';
     } else {
       panelImage.style.display = 'none';
     }
-
-
-
   }
 
+  // ✅ Reusable function to show success message and hide the form
+  function showSuccessMessage() {
+    if (formWrapper) {
+      formWrapper.style.display = 'none';
+      const successDiv = document.createElement('div');
+      successDiv.className = 'alert alert-success mt-4';
+     successDiv.innerHTML = `
+      <h4 class="mb-2">Success!</h4>
+      <p>Your measure-up request has been received. We’ll be in touch within 1–2 business days to arrange your site visit. Prepare for exceptional panelling!</p>
+    `;
+      formWrapper.parentNode.insertBefore(successDiv, formWrapper);
+    }
+  }
+
+  // Listen for modal open to update preview
+  document.getElementById('detailsModal').addEventListener('show.bs.modal', updateAllFields);
+
+  // Submit form via fetch
+  fullForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    updateAllFields();
+
+    const formData = new FormData(fullForm);
+
+    fetch('/wp-admin/admin-post.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Form submission failed.');
+      return res.text();
+    })
+    .then(data => {
+      console.log('Response:', data);
+
+      fullForm.reset();
+      document.getElementById('calculatorForm').reset();
+      inputPrice.value = '';
+      bootstrap.Modal.getInstance(document.getElementById('detailsModal')).hide();
+
+      // ✅ Use the reusable function here
+      showSuccessMessage();
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Submission failed. Please try again.');
+    });
+  });
+
+  // Setup listeners
   [radoRail, panelMode, inputSQM].forEach(el => {
     el.addEventListener('input', updateAllFields);
     el.addEventListener('change', updateAllFields);
   });
 
   window.addEventListener('load', updateAllFields);
+
+  // Optional: test manually
+  // showSuccessMessage();
 });
