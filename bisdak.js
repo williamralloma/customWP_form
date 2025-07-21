@@ -8,6 +8,11 @@ window.addEventListener('DOMContentLoaded', function () {
   const fullForm = document.getElementById('fullForm');
   const formWrapper = document.getElementById('custom-form');
 
+  const hiddenRadoRail = document.getElementById('hiddenRadoRail');
+  const hiddenPanelMode = document.getElementById('hiddenPanelMode');
+  const hiddenSQM = document.getElementById('hiddenSQM');
+  const hiddenPrice = document.getElementById('hiddenPrice');
+
   const radoImageMap = {
     '10': 'https://mrstairpanelling.co.uk/wp-content/uploads/2025/07/19x63-Victorian.png',
     '15': 'https://mrstairpanelling.co.uk/wp-content/uploads/2025/07/15x57-Victorian.png',
@@ -58,24 +63,70 @@ window.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // ✅ Reusable function to show success message and hide the form
-  function showSuccessMessage() {
-    if (formWrapper) {
-      formWrapper.style.display = 'none';
-      const successDiv = document.createElement('div');
-      successDiv.className = 'alert alert-success mt-4';
-     successDiv.innerHTML = `
+  function resetFormUI() {
+    // Clear images
+    radoImage.style.display = 'none';
+    panelImage.style.display = 'none';
+
+    // Clear summary text
+    document.getElementById('summaryRadoRail').textContent = '';
+    document.getElementById('summaryPanelMode').textContent = '';
+    document.getElementById('summarySQM').textContent = '';
+    document.getElementById('summaryPrice').textContent = '';
+
+    // Clear hidden fields
+    hiddenRadoRail.value = '';
+    hiddenPanelMode.value = '';
+    hiddenSQM.value = '';
+    hiddenPrice.value = '';
+
+    // Clear calculated price
+    inputPrice.value = '';
+  }
+
+ function showSuccessMessage() {
+  if (formWrapper) {
+    formWrapper.style.display = 'none';
+
+    const successDiv = document.createElement('div');
+    successDiv.className = 'alert alert-success mt-4';
+    successDiv.id = 'successMessage';
+
+    successDiv.innerHTML = `
       <h4 class="mb-2">Success!</h4>
       <p>Your measure-up request has been received. We’ll be in touch within 1–2 business days to arrange your site visit. Prepare for exceptional panelling!</p>
     `;
-      formWrapper.parentNode.insertBefore(successDiv, formWrapper);
-    }
-  }
 
-  // Listen for modal open to update preview
+    formWrapper.parentNode.insertBefore(successDiv, formWrapper);
+
+    // ✅ Delay the scroll slightly to ensure the DOM is ready
+    setTimeout(() => {
+      const messageEl = document.getElementById('successMessage');
+      if (messageEl) {
+        messageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 300); // 300ms delay helps the browser settle after page load
+  }
+}
+
+
+
+ 	 // Show success message on redirect
+	if (window.location.search.includes('sample_request=success')) {
+  	// Remove the anchor/hash and scroll behavior lock
+ 	 history.replaceState(null, '', window.location.pathname + window.location.search);
+
+  	// Wait for DOM to be stable before injecting + scrolling
+  	setTimeout(() => {
+    showSuccessMessage();
+  }, 200);
+}
+
+
+  // Update preview when modal is shown
   document.getElementById('detailsModal').addEventListener('show.bs.modal', updateAllFields);
 
-  // Submit form via fetch
+  // Submit form
   fullForm.addEventListener('submit', function (e) {
     e.preventDefault();
     updateAllFields();
@@ -95,11 +146,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
       fullForm.reset();
       document.getElementById('calculatorForm').reset();
-      inputPrice.value = '';
       bootstrap.Modal.getInstance(document.getElementById('detailsModal')).hide();
 
-      // ✅ Use the reusable function here
-      showSuccessMessage();
+      resetFormUI(); // ✅ Reset visual elements
+      showSuccessMessage(); // ✅ Show thank-you
     })
     .catch(err => {
       console.error(err);
@@ -107,14 +157,11 @@ window.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Setup listeners
+  // Setup listeners for dynamic updates
   [radoRail, panelMode, inputSQM].forEach(el => {
     el.addEventListener('input', updateAllFields);
     el.addEventListener('change', updateAllFields);
   });
 
   window.addEventListener('load', updateAllFields);
-
-  // Optional: test manually
-  // showSuccessMessage();
 });
